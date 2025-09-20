@@ -37,3 +37,31 @@ This bot automates the reservation process ethically:
 ```bash
 git clone https://github.com/zabu24/pickleball_court_reserver_bot.git
 cd pickleball_court_reserver_bot
+
+2. Create and Activate Virtual Environment
+# Create venv
+python3 -m venv venv
+
+# Activate venv (Mac/Linux)
+source venv/bin/activate
+
+# Activate venv (Windows)
+venv\Scripts\activate
+
+3. Install Dependencies
+pip install -r requirements.txt
+
+Usage Instructions
+
+To run the bot, use:
+
+python random.py
+
+
+When running:
+
+The bot will log in to the reservation system.
+
+It will attempt to reserve your configured court slot(s).
+
+Status updates and errors will be printed to the terminal.
