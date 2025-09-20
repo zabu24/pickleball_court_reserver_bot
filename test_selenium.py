@@ -12,8 +12,8 @@ import datetime as dt
 import traceback
 import schedule
 
-EMAIL = "kabughannam@gmail.com"
-PASSWORD = "Zibberman92"
+EMAIL = "xxx" // enter account creds
+PASSWORD = "xxx" 
 CLUB_ID = "36"  # Fairfax
 SPORT = "Pickleball%3A+Indoor"
 DURATION = "90"
@@ -29,7 +29,7 @@ def get_target_date(offset):
 
 def perform_login(driver):
     try:
-        print("🔐 Waiting for login form...")
+        print("Waiting for login form...")
         WebDriverWait(driver, 15).until(
             EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Username, Email, or Member ID']"))
         )
@@ -40,18 +40,18 @@ def perform_login(driver):
         username.send_keys(EMAIL)
         password.send_keys(PASSWORD)
         login_button.click()
-        print("🧑 Submitted login form.")
+        print("Submitted login form.")
 
         WebDriverWait(driver, 15).until(
             lambda d: "login" not in d.current_url.lower()
         )
-        print("✅ Logged in and redirected.")
+        print("Logged in and redirected.")
     except Exception as e:
-        print("❌ Login failed.")
+        print("Login failed.")
         traceback.print_exc()
 
 def click_waiver_checkbox(driver):
-    print("🎯 Attempting to click waiver checkbox...")
+    print("Attempting to click waiver checkbox...")
     try:
         waiver_checkbox = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "acceptwaiver"))
@@ -60,9 +60,9 @@ def click_waiver_checkbox(driver):
         t.sleep(1)
         if not waiver_checkbox.is_selected():
             driver.execute_script("arguments[0].click();", waiver_checkbox)
-            print("☑️ Accepted reservation waiver.")
+            print("Accepted reservation waiver.")
     except Exception as e:
-        print("⚠️ No waiver checkbox found or clickable.")
+        print("No waiver checkbox found or clickable.")
         traceback.print_exc()
 
 def reserve_court():
@@ -75,19 +75,19 @@ def reserve_court():
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
         try:
-            print("🚀 Navigating to reservation page...")
+            print("Navigating to reservation page...")
             driver.get(RESERVATION_URL)
             t.sleep(2)
 
-            print("🍚 Checking for cookie banner...")
+            print("Checking for cookie banner...")
             try:
                 cookie_btn = WebDriverWait(driver, 5).until(
                     EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Accept All')]"))
                 )
                 cookie_btn.click()
-                print("☑️ Accepted cookies.")
+                print("Accepted cookies.")
             except:
-                print("🍪 No cookie banner found.")
+                print("No cookie banner found.")
 
             print("🔍 Scanning for available time blocks...")
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight / 2);")
@@ -115,13 +115,13 @@ def reserve_court():
 
             if preferred_slot:
                 driver.execute_script("arguments[0].click();", preferred_slot)
-                print(f"🎯 Clicked slot for {slot_time}")
+                print(f"Clicked slot for {slot_time}")
                 t.sleep(2)
 
                 if "login" in driver.current_url.lower():
-                    print("🔁 Redirected to login screen after time selection. Logging in...")
+                    print("Redirected to login screen after time selection. Logging in...")
                     perform_login(driver)
-                    print("⏳ Waiting for reservation UI...")
+                    print("Waiting for reservation UI...")
                     WebDriverWait(driver, 15).until_not(lambda d: "login" in d.current_url.lower())
 
                 click_waiver_checkbox(driver)
@@ -132,44 +132,44 @@ def reserve_court():
                         EC.presence_of_element_located((By.CLASS_NAME, "reservation-summary"))
                     )
                 except:
-                    print("⚠️ Reservation summary panel may not have loaded.")
+                    print("Reservation summary panel may not have loaded.")
 
-                print("🎯 Clicking Finish button...")
+                print("Clicking Finish button...")
                 try:
                     finish_btn = WebDriverWait(driver, 15).until(
                         EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Finish')]"))
                     )
                     finish_btn.click()
-                    print(f"✅ Reservation completed for {target_date} at {slot_time}")
+                    print(f"Reservation completed for {target_date} at {slot_time}")
                     t.sleep(5)
                     return  # Success, exit the function
                 except Exception as e:
-                    print("❌ Couldn't find or click Finish button.")
+                    print("Couldn't find or click Finish button.")
                     traceback.print_exc()
             else:
-                print("❌ No time slots available.")
+                print("No time slots available.")
 
         except Exception as e:
-            print("❌ Error occurred:")
+            print("Error occurred:")
             traceback.print_exc()
         finally:
-            print("🩩 Quitting browser.")
+            print("Quitting browser.")
             with open("page_snapshot.html", "w", encoding="utf-8") as f:
                 f.write(driver.page_source)
-                print("📄 Saved page_snapshot.html for inspection.")
+                print("Saved page_snapshot.html for inspection.")
             driver.quit()
 
-# 🕒 Run immediately for testing
+# Run immediately for testing
 #reserve_court()
 
-# 🗓️ Schedule for weekdays at 9:00 AM
+#    Schedule for weekdays at 9:00 AM
 schedule.every().monday.at("09:00").do(reserve_court)
 schedule.every().tuesday.at("09:00").do(reserve_court)
 schedule.every().wednesday.at("09:00").do(reserve_court)
 schedule.every().thursday.at("09:00").do(reserve_court)
 schedule.every().friday.at("09:00").do(reserve_court)
 
-print("🕒 Scheduler running. Waiting for 9:00 AM on weekdays to reserve your court...")
+print("Scheduler running. Waiting for 9:00 AM on weekdays to reserve your court...")
 while True:
     schedule.run_pending()
     t.sleep(10)
